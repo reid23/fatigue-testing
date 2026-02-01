@@ -30,7 +30,7 @@
 #define MAX_ACC 500.0
 #define FAST_STOP_ACC 50000.0
 
-#define CLEAR_OF_SAMPLE 10.0 // distance to go clear of the sample
+#define CLEAR_OF_SAMPLE 5.0 // distance to go clear of the sample
 #define X_MAX 65
 
 #define V_START 5
@@ -90,7 +90,7 @@ void tmc_init() {
     // TERN_(SQUARE_WAVE_STEPPING, chopconf.dedge = true);
     motor.CHOPCONF(chopconf.sr);
 
-    motor.rms_current(1500, 0.5);
+    motor.rms_current(1800, 0.25);
     motor.microsteps(USTEPS);
     motor.iholddelay(10);
     motor.TPOWERDOWN(128); // ~2s until driver lowers to hold current
@@ -106,6 +106,7 @@ void tmc_init() {
     pwmconf.pwm_freq = 0b01;
     pwmconf.pwm_grad = 14;
     pwmconf.pwm_ofs = 36;
+    
     motor.PWMCONF(pwmconf.sr);
     // TERN(HYBRID_THRESHOLD, motor.set_pwm_thrs(hyb_thrs), UNUSED(hyb_thrs));
     motor.GSTAT(); // Clear GSTAT
