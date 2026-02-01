@@ -3,23 +3,7 @@ import cv2
 import numpy as np
 import os
 import sys
-
-# ============================================================
-# -------------------- USER SETTINGS -------------------------
-# ============================================================
-
-DB_PATH = "fatigue_data.db"
-OUTPUT_DIR = "timelapses"
-
-RUN_NAME = "plebtest_encoder_foam_2"
-
-FPS = 60
-FONT = cv2.FONT_HERSHEY_SIMPLEX
-FONT_SCALE = 0.6
-FONT_THICKNESS = 2
-TEXT_COLOR = (0, 255, 0)
-LINE_SPACING = 22
-MARGIN = 10
+from params import *
 
 STATE_NAMES = {
     0: "FWD",

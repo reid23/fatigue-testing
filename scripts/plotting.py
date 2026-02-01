@@ -2,24 +2,7 @@ import sqlite3
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
-
-# ============================================================
-# -------------------- USER SETTINGS -------------------------
-# ============================================================
-
-DB_PATH = "fatigue_data.db"
-RUN_NAME = "plebtest_encoder_foam_2"
-
-# Max points to plot (safety)
-MAX_POINTS = 500_000
-
-# Scatter plot settings
-POINT_SIZE = 2
-ALPHA = 1
-FIG_DPI = 150
-OUTPUT_FILE = f"{RUN_NAME}_force_vs_position.png"
-
-# ============================================================
+from params import *
 
 def main():
     conn = sqlite3.connect(DB_PATH)

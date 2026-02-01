@@ -17,9 +17,9 @@ SERIAL_PORT = "/dev/serial/by-id/usb-Teensyduino_USB_Serial_15749420-if00"
 BAUDRATE = 2_500_000
 
 DB_PATH = "fatigue_data.db"
-RUN_NAME = "plebtest_final"
+RUN_NAME = "raw noodle"
 
-STOP_FORCE = 60.0 # N
+STOP_FORCE = 30.0 # N
 CLEAR_FORCE = 0.5 # N
 FEED_RATE = 20.0 # mm/s
 RETRACT_RATE = 100.0 # mm/s
