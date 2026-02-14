@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 from params import *
 
-DATA_STRUCT = struct.Struct("<IIffI")  # must match MCU exactly
+DATA_STRUCT = struct.Struct("<IIffI")
 
 sample_queue = queue.Queue(maxsize=10_000)
 plot_queue = queue.Queue(maxsize=50_000)
@@ -105,12 +105,15 @@ def db_writer(conn, run_id):
         cycle, stamp, force, pos, state = sample
         buffer.append((run_id, stamp, cycle, force, pos, state))
         if len(buffer) >= SQLITE_BATCH_SIZE:
-            c.executemany("""
-                INSERT INTO samples
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, buffer)
-            conn.commit()
-            buffer.clear()
+            try:
+                c.executemany("""
+                    INSERT INTO samples
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, buffer)
+                conn.commit()
+                buffer.clear()
+            except:
+                pass
 
     if buffer:
         c.executemany("""
@@ -141,7 +144,7 @@ def image_capturer(conn, run_id):
         c.execute("""
             INSERT INTO images
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (run_id, sample[0], sample[1], sample[2], sample[3], sample[4], png.tobytes()))
+        """, (run_id, sample[1], sample[0], sample[2], sample[3], sample[4], png.tobytes()))
         conn.commit()
 
     cam.release()
@@ -223,11 +226,17 @@ def main():
     print(f"Started run {RUN_NAME} (id={run_id})")
 
     ser = serial.Serial(SERIAL_PORT, BAUDRATE, timeout=1)
-
+    time.sleep(5.0) # wait for it to boot and tare
+    ser.write(b"\n\n\n")
+    time.sleep(1.0)
+    ser.write(b"G0 10.0\n")
+    time.sleep(1.0)
+    ser.write(b"G0 0.0\n")
+    time.sleep(1.0)
     cmd = f"SET {STOP_FORCE} {CLEAR_FORCE} {FEED_RATE} {RETRACT_RATE}\n"
+    print(cmd)
     ser.write(cmd.encode())
     time.sleep(0.1)
-
     ser.write(b"BEGIN\n")
 
     threads = [
@@ -247,13 +256,15 @@ def main():
     try:
         while True:
             time.sleep(1)
-    except KeyboardInterrupt:
+    except:
         print("Stopping...")
         stop_event.set()
 
     for t in threads:
         t.join()
 
+    ser.write(b'RESET\n')
+    ser.write(b'G0 0.0\n')
     ser.close()
     conn.close()
     print("Done.")

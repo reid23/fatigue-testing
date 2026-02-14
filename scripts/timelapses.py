@@ -67,9 +67,9 @@ def main():
             state,
             image
         FROM images
-        WHERE run_id = ?
-        ORDER BY state, timestamp_us
-    """, (run_id,))
+        WHERE run_id = ? AND (cycle % ?) = 0
+        ORDER BY cycle ASC
+    """, (run_id, TIMELAPSE_DOWNSAMPLE))
 
     rows = c.fetchall()
     conn.close()
@@ -80,7 +80,12 @@ def main():
 
     writers = {}
 
-    for cycle, timestamp_us, force, position, state, blob in rows:
+    total_frames = len(rows)
+    i = 0
+    for row in rows[0:20]:
+        print(f"ts: {row[0]:10,.0f}, cycle: {row[1]:8,.0f}, state: {row[4]}")
+    print("Data loaded")
+    for timestamp_us, cycle, force, position, state, blob in rows:
         img_array = np.frombuffer(blob, dtype=np.uint8)
         frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         if frame is None:
@@ -92,7 +97,7 @@ def main():
             cycle,
             force,
             position,
-            state,
+            state
         )
 
         if state not in writers:
@@ -110,10 +115,11 @@ def main():
                 (w, h),
             )
 
-            print(f"Writing {out_path}")
+            # print(f"Writing {out_path}")
 
         writers[state].write(frame)
-
+        i += 1
+        print(f"\r{i:5,.0f}/{total_frames} frames written ({100*i/total_frames:5,.1f}%) |{'@'*int(30*i/total_frames) + ' '*(30-int(30*i/total_frames))}|", end='')
     for writer in writers.values():
         writer.release()
 

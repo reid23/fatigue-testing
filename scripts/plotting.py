@@ -1,4 +1,6 @@
 import sqlite3
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
@@ -37,10 +39,13 @@ def main():
     positions = []
 
     for cycle, force, pos in data:
+        if cycle%EVERY_NTH_CYCLE != 0:
+            continue
         cycles.append(cycle)
         forces.append(force)
         positions.append(pos)
         if len(cycles) >= MAX_POINTS:
+            print(f"max points exceeded at cycle {cycles[-1]}")
             break  # prevent memory issues
 
     # Create scatter plot
@@ -62,7 +67,7 @@ def main():
     cbar.set_label("Cycle")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_FILE, dpi=FIG_DPI)
+    plt.savefig(OUTPUT_FILE.replace("/", ""), dpi=FIG_DPI)
     plt.show()
 
     print(f"Plot saved to {OUTPUT_FILE}")
