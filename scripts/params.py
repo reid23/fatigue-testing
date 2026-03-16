@@ -4,7 +4,7 @@ SERIAL_PORT = "/dev/serial/by-id/usb-Teensyduino_USB_Serial_15749420-if00"
 BAUDRATE = 2500000
 
 DB_PATH = "fatigue_data.db"
-RUN_NAME = "raw_noodle_50N_flat_plate"
+RUN_NAME = "raw_noodle_notched_50N_flat_plate"
 
 STOP_FORCE = 50.0 # N
 CLEAR_FORCE = 0.5 # N
@@ -27,7 +27,7 @@ MAX_PLOTTED_POINTS = 200_000
 ###* post-run plotting
 
 MAX_POINTS = 700_000
-EVERY_NTH_CYCLE = 50
+EVERY_NTH_CYCLE = 5
 
 # Scatter plot settings
 POINT_SIZE = 2
